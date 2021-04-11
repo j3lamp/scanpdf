@@ -492,7 +492,7 @@ class ScanPdf(object):
             # Now, convert the files to ps
             pages = self.get_pages()
             logging.debug( pages )
-            if self.args['--face-up']:
+            if self.args['--face-up'] and self.args['--face-up'].lower() == "true":
                 pages = self.reorder_face_up(pages)
             
             logging.debug( pages )
