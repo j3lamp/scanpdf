@@ -247,7 +247,10 @@ class ScanPdf(object):
 
 
         # Convert each page to a ps
+        pdf_page_files = []
         for page in page_files:
+            pdf_page_file = '%s.pdf' % page
+
             is_bw = self.bw_pages.get(page, False)
             if is_bw:
                 c = ['convert',
@@ -259,7 +262,7 @@ class ScanPdf(object):
                         '-define png:color-type=0',
                         '-define png:bit-depth=2',
                         'PNG:- | convert - -rotate 180',
-                        '%s.pdf' % page,
+                        pdf_page_file,
                         ]
             else:
                 c = ['convert',
@@ -273,9 +276,10 @@ class ScanPdf(object):
                         '-colorspace RGB',
                         '-rotate 180',
                         page,
-                        '%s.pdf' % page,
+                        pdf_page_file,
                     ]
             self.cmd(c)
+            pdf_page_files.append(pdf_page_file)
 
         # Create a single ps file using gs
         c = ['gs', 
@@ -326,7 +330,9 @@ class ScanPdf(object):
         if not self.args['--keep-tmpdir']:
             for filename in page_files:
                 os.remove(filename)
-           
+            for filename in pdf_page_files:
+                os.remove(filename)
+
         # IF we did the scan, then remove the tmp dir too
         if self.args['scan'] and not self.args['--keep-tmpdir']:
             os.rmdir(self.tmp_dir)
